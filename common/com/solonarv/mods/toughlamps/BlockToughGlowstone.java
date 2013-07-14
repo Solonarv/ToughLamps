@@ -40,6 +40,16 @@ public class BlockToughGlowstone extends Block {
     }
     
     @Override
+    public int idPicked(World world, int x, int y, int z) {
+        return this.blockID;
+    }
+    
+    @Override
+    public int getDamageValue(World world, int x, int y, int z) {
+        return this.damageDropped(world.getBlockMetadata(x, y, z));
+    }
+    
+    @Override
     public boolean canCreatureSpawn(EnumCreatureType type, World world, int x,
             int y, int z) {
         return false;

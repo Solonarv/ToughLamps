@@ -18,24 +18,39 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class ToughLamps {
     @Instance
-    public static ToughLamps    instance;
+    public static ToughLamps          instance;
     
-    public static Configuration config;
+    public static Configuration       config;
     
-    public static Block         toughGlowstone;
+    public static BlockToughGlowstone toughGlowstone;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         config = new Configuration(e.getSuggestedConfigurationFile());
         
-        toughGlowstone = new BlockToughGlowstone(config.getBlock(
-                "toughGlowstone", 430).getInt(), Material.iron)
+        toughGlowstone = (BlockToughGlowstone) (new BlockToughGlowstone(config
+                .getBlock("toughGlowstone", 430).getInt(), Material.iron)
                 .setUnlocalizedName("toughGlowstone").setHardness(1.5f)
                 // enough for point-blank charged creeper
                 .setResistance(125).setStepSound(Block.soundMetalFootstep)
-                .setCreativeTab(CreativeTabs.tabBlock);
+                .setCreativeTab(CreativeTabs.tabBlock));
         
-        LanguageRegistry.addName(toughGlowstone, "Toughened Glowstone");
+        try {
+            
+            LanguageRegistry.addName(new ItemStack(toughGlowstone, 1, 0),
+                    "Toughened Glowstone");
+            LanguageRegistry.addName(new ItemStack(toughGlowstone, 1, 1),
+                    "Toughened Lamp");
+            LanguageRegistry.addName(new ItemStack(toughGlowstone, 1, 3),
+                    "Toughened Inverted Lamp");
+        } catch (NullPointerException ex) {
+            if (new ItemStack(toughGlowstone).getItem() == null) {
+                System.out
+                        .println("ItemStacks of toughGlowstone have null as their item!");
+            } else {
+                ex.printStackTrace();
+            }
+        }
         /*
          * make toughened glowstone: 3 glowstone in the middle row/col,
          * surrounded by 6 iron.Gives 4.
