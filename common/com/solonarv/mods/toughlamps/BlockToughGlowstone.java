@@ -1,10 +1,11 @@
 package com.solonarv.mods.toughlamps;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -13,7 +14,9 @@ import net.minecraft.world.World;
 
 public class BlockToughGlowstone extends Block {
     
-    protected Icon[] icons;
+    protected Icon[]   icons;
+    protected String[] names = { "toughGlowstone", "toughRSLamp(off)",
+            "toughRSLamp(on)", "invToughRSLamp(on)", "invToughRSLamp(off)" };
     
     public BlockToughGlowstone(int id, Material mat) {
         super(id, mat);
@@ -21,7 +24,7 @@ public class BlockToughGlowstone extends Block {
     
     @Override
     public Icon getIcon(int side, int meta) {
-        return this.icons[meta];
+        return meta < 3 ? this.icons[meta] : this.icons[5 - meta];
     }
     
     @Override
@@ -32,25 +35,20 @@ public class BlockToughGlowstone extends Block {
     }
     
     @Override
-    public ArrayList<ItemStack> getBlockDropped(World world, int x, int y,
-            int z, int metadata, int fortune) {
-        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-        switch (world.getBlockMetadata(x, y, z)) {
-            case 0: // It's glowstone
-                ret.add(new ItemStack(this, 1, 0));
-                break;
-            case 1: // It's a lamp
-            case 2:
-                ret.add(new ItemStack(this, 1, 1));
-                break;
-        }
-        return ret;
+    public int damageDropped(int meta) {
+        return meta == 2 ? 1 : meta == 4 ? 3 : meta;
     }
     
     @Override
     public boolean canCreatureSpawn(EnumCreatureType type, World world, int x,
             int y, int z) {
         return false;
+    }
+    
+    public void getSubBlocks(int id, CreativeTabs tab, List subBlocks) {
+        subBlocks.add(new ItemStack(id, 1, 0)); // glowstone
+        subBlocks.add(new ItemStack(id, 1, 1)); // lamp
+        subBlocks.add(new ItemStack(id, 1, 3)); // inv. lamp
     }
     
     @Override
@@ -63,8 +61,10 @@ public class BlockToughGlowstone extends Block {
         switch (world.getBlockMetadata(x, y, z)) {
             case 0: // It's glowstone
             case 2: // It's a lamp (on)
+            case 3: // It's an inverted lamp (on)
                 return 15;
             case 1: // It's a lamp (off)
+            case 4: // It's an inverted lamp (off)
                 return 0;
         }
         return 0;
@@ -76,6 +76,10 @@ public class BlockToughGlowstone extends Block {
             world.setBlockMetadataWithNotify(x, y, z, 2, 3);
         } else if (meta == 2 && !world.isBlockIndirectlyGettingPowered(x, y, z)) {
             world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+        } else if (meta == 3 && world.isBlockIndirectlyGettingPowered(x, y, z)) {
+            world.setBlockMetadataWithNotify(x, y, z, 4, 3);
+        } else if (meta == 4 && !world.isBlockIndirectlyGettingPowered(x, y, z)) {
+            world.setBlockMetadataWithNotify(x, y, z, 3, 3);
         }
     }
     
