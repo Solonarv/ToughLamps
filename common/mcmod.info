@@ -1,0 +1,16 @@
+[{
+	"modid": "tlamp",
+    "name":  "Tough Lamps",
+    "description": "Tired of creepers blowing up your glowstone? Bringing you blastproof glowstone and glowstone lamps for all your lighting needs!",
+    "version":"@VERSION@",
+    "url": "https://github.com/Solonarv/minecraftmod-golemworld",
+    "updateUrl": "",
+    "authorList": [
+        "solonarv"
+    ],
+    "credits": "Solonarv",
+    "logoFile": "",
+    "screenshots": [],
+    "parent": "",
+    "dependencies": []
+}]
