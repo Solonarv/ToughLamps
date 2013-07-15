@@ -108,4 +108,8 @@ public class BlockToughGlowstone extends Block {
         }
     }
     
+    public String getUnlocalizedName(ItemStack is) {
+        return this.names[is.getItemDamage()];
+    }
+    
 }

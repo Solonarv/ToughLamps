@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlockWithMetadata;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.Mod;
@@ -23,17 +24,37 @@ public class ToughLamps {
     public static Configuration       config;
     
     public static BlockToughGlowstone toughGlowstone;
+    public static int                 toughGlowstoneID;
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         config = new Configuration(e.getSuggestedConfigurationFile());
         
-        toughGlowstone = (BlockToughGlowstone) (new BlockToughGlowstone(config
-                .getBlock("toughGlowstone", 430).getInt(), Material.iron)
+        toughGlowstoneID = config.getBlock("toughGlowstone", 430).getInt();
+        
+        toughGlowstone = (BlockToughGlowstone) (new BlockToughGlowstone(
+                toughGlowstoneID, Material.iron)
                 .setUnlocalizedName("toughGlowstone").setHardness(1.5f)
                 // enough for point-blank charged creeper
                 .setResistance(125).setStepSound(Block.soundMetalFootstep)
                 .setCreativeTab(CreativeTabs.tabBlock));
+        Item.itemsList[toughGlowstoneID] = null;
+        Item.itemsList[toughGlowstoneID] = (new ItemBlockWithMetadata(
+                toughGlowstoneID - 256, toughGlowstone) {
+            @Override
+            public boolean isDamaged(ItemStack is) {
+                return false;
+            }
+            
+            @Override
+            public String getUnlocalizedName(ItemStack is) {
+                return toughGlowstone.getUnlocalizedName(is);
+            }
+        });
+        if (Item.itemsList[toughGlowstoneID] != null) {
+            System.out
+                    .println("Successfully added custom ItemBlock for toughened glowstone!");
+        }
         
         try {
             
@@ -53,7 +74,7 @@ public class ToughLamps {
         }
         /*
          * make toughened glowstone: 3 glowstone in the middle row/col,
-         * surrounded by 6 iron.Gives 4.
+         * surrounded by 6 iron. Gives 4.
          */
         GameRegistry.addRecipe(new ItemStack(toughGlowstone, 4, 0),
                 new Object[] { "igi", "igi", "igi", 'i', Item.ingotIron, 'g',
